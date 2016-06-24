@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class ProviderManager(BaseUserManager):
 
-    def _create_user(seld, email, password, is_staff, is_superuser, **extra_fields):
+    def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         '''Creates and saves a User with the given email and password'''
         now = timezone.now()
 
@@ -33,14 +33,14 @@ class ProviderManager(BaseUserManager):
 
 class Provider(AbstractBaseUser):
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, default='')
     email = models.EmailField(max_length=256, unique=True, db_index=True)
-    phone_number = models.CharField(max_length=32, unique=True)
-    language = models.CharField(max_length=8)
-    currency = models.CharField(max_length=8)
+    phone_number = models.CharField(max_length=32, default='')
+    language = models.CharField(max_length=8, default='')
+    currency = models.CharField(max_length=8, default='')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'phone_number', 'language', 'currency',]
+    REQUIRED_FIELDS = []
 
     objects = ProviderManager()
 
@@ -64,7 +64,7 @@ class Provider(AbstractBaseUser):
 class Area(geomodels.Model):
     provider = geomodels.ForeignKey(settings.AUTH_USER_MODEL, related_name='areas',
                                  on_delete=models.CASCADE)
-    geojson = geomodels.PolygonField
+    polygon = geomodels.GeometryField()
     name = geomodels.CharField(max_length=256)
     price = geomodels.DecimalField(max_digits=10, decimal_places=2)
 
